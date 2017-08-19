@@ -1,0 +1,43 @@
+---
+- name: Users | Adding sudo Users
+  user:
+    name: {{ sudo_user }}
+    comment: "sudo user"
+    groups: sudo
+    append: yes
+
+- name: SSH Key | Placing public key from local machine for ssh access
+  authorized_key:
+    user: {{ sudo_user }}
+    state: present
+    key: "{{ lookup('file', '/home/anserio/.ssh/id_rsa.pub') }}" # SET CORRECT KEY HERE
+
+- name: SSH Keys | Placing public keys from the public keys folder
+  authorized_key:
+    user: {{ sudo_user }}
+    state: present
+    key: '{{ item }}'
+  with_file:
+    - public_keys/somekey.pub
+
+- name: Sudo shell | Set sudo password
+  shell: echo {{ sudo_user }}:iamsudorootpoi | sudo chpasswd
+  no_log: True
+
+- name: SSH Config | Configure ssh to reject root login
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PermitRootLogin'
+    line: 'PermitRootLogin no'
+  notify: restart ssh
+
+- name: SSH Config | Configure ssh to reject pw login
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication yes'
+  notify: restart ssh
+
+- name: Shell | Set default shell to zsh
+  shell: chsh -s /bin/zsh
+  remote_user: {{ sudo_user }}

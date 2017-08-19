@@ -1,0 +1,24 @@
+---
+# This playbook installs all the needed applications
+# as sudo and git- These are just tasks
+
+- name: Apt | update
+  apt:
+    update-cache: yes
+
+- name: Apt | Install utilities: sudo, git, zsh, curl
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - sudo
+    - git
+    - rsync
+    - zsh
+    - curl
+
+# And make sure firewall is updated
+
+- name: Apt | update
+  apt:
+    update-cache: yes

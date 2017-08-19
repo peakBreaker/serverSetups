@@ -1,0 +1,23 @@
+---
+# tasks for webservers to run git clone on repo and run application
+#- name: Apt | Update
+#  apt:
+#    update-cache: yes
+
+- name: Synchronize | Application directory
+  synchronize:
+    src: app/{{ wsgi_application }}
+    dest: /home/{{sudo_user}}
+
+# Next we copy over the configurations
+
+- name: Synchronize | Apache configurations
+  synchronize:
+    src: app/serverSetups/config/000-default.conf
+    dest: /etc/apache2/sites-enabled/
+
+- name: Synchronize | WSGI configurations
+  synchronize:
+    src: app/serverSetups/config/wsgi/myapp.wsgi
+    dest: /var/www/html/
+  notify: restart apache2

@@ -1,0 +1,1 @@
+the app dir is a soft link to the app directory

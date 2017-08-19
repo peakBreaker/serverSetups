@@ -1,0 +1,4 @@
+---
+# File for general handlers
+- name: restart apache
+  shell: restart apache2ctl
