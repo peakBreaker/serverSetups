@@ -1,43 +1,86 @@
 ---
+  # First we add our sudo user
 - name: Users | Adding sudo Users
   user:
-    name: {{ sudo_user }}
+    name: "{{ sudo_user }}"
     comment: "sudo user"
     groups: sudo
     append: yes
-
-- name: SSH Key | Placing public key from local machine for ssh access
+# Next we add our SSH keys
+- name: SSH Keys | Placing public key from local machine for ssh access
   authorized_key:
-    user: {{ sudo_user }}
+    user: "{{ sudo_user }}"
     state: present
     key: "{{ lookup('file', '/home/anserio/.ssh/id_rsa.pub') }}" # SET CORRECT KEY HERE
 
-- name: SSH Keys | Placing public keys from the public keys folder
-  authorized_key:
-    user: {{ sudo_user }}
+- name: Groups | Make sure we have a 'wheel' group
+  group:
+    name: wheel
     state: present
-    key: '{{ item }}'
-  with_file:
-    - public_keys/somekey.pub
 
-- name: Sudo shell | Set sudo password
-  shell: echo {{ sudo_user }}:iamsudorootpoi | sudo chpasswd
-  no_log: True
+- name: Groups | Allow 'wheel' group to have passwordless sudo
+  lineinfile:
+    dest: /etc/sudoers
+    state: present
+    regexp: '^%wheel'
+    line: '%wheel ALL=(ALL) NOPASSWD: ALL'
 
+- name: Users | Add sudo_user to wheel group for passwordless sudo
+  user: name={{ sudo_user }} groups=wheel append=yes state=present createhome=yes
+
+# - name: SSH Keys | Placing public keys from the public keys folder
+#   authorized_key:
+#     user: "{{ sudo_user }}"
+#     state: present
+#     key: '{{ item }}'
+#   with_file:
+#     - public_keys/somekey.pub
+
+# - name: Sudo shell | Set sudo password
+#   shell: echo {{ sudo_user }}:iamsudorootpoi | sudo chpasswd
+#   no_log: True
+
+# Because life is better with Zsh we set it to our default shell for the user
+- name: Shell | Set default shell to zsh
+  shell: chsh -s /bin/zsh
+  remote_user: "{{ sudo_user }}"
+
+# Next we edit our ssh configs to harden the server
 - name: SSH Config | Configure ssh to reject root login
   lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: '^PermitRootLogin'
     line: 'PermitRootLogin no'
-  notify: restart ssh
 
 - name: SSH Config | Configure ssh to reject pw login
   lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: '^PasswordAuthentication'
-    line: 'PasswordAuthentication yes'
-  notify: restart ssh
+    line: 'PasswordAuthentication no'
 
-- name: Shell | Set default shell to zsh
-  shell: chsh -s /bin/zsh
-  remote_user: {{ sudo_user }}
+- name: SSH Config | Configure ssh to use a different port
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^Port'
+    line: 'Port {{ ssh_port }}'
+
+- name: restart ssh
+  service: name=sshd state=restarted
+
+# Remember that TCP 2200 must be enabled in AWS console
+# After this we change the ansible_ssh_port variable to continue
+- name: Ansible ssh | Set port to ssh_port variable and user to sudo_user
+  set_fact:
+    ansible_port: "{{ ssh_port }}"
+    ansible_user: "{{ sudo_user }}"
+
+# Then we proceed to configure NTP
+
+- name: Configure ntp file
+  template: src=ntp.conf.j2 dest=/etc/ntp.conf
+  tags: ntp
+  notify: restart ntp
+
+- name: Start the ntp service
+  service: name=ntp state=started enabled=yes
+  tags: ntp

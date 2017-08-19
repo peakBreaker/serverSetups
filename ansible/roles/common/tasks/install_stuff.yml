@@ -1,24 +1,46 @@
 ---
-# This playbook installs all the needed applications
-# as sudo and git- These are just tasks
+# This playbook installs all the needed applications and utils
 
 - name: Apt | update
   apt:
     update-cache: yes
 
-- name: Apt | Install utilities: sudo, git, zsh, curl
+- name: Apt | Install utilities - sudo, git, zsh, curl
   apt:
     pkg: "{{ item }}"
     state: latest
   with_items:
     - sudo
     - git
-    - rsync
     - zsh
     - curl
+    - ntp
 
-# And make sure firewall is updated
+- name: Apt | Install apache2 with wsgi-libs
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - apache2
+    - libapache2-mod-wsgi
 
+- name: Apt | install PostgreSQL
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - postgresql
+
+- name: Apt | Install python, pip and virtualenv
+  apt:
+    pkg: "{{ item }}"
+    state: latest
+  with_items:
+    - python
+    - python-pip
+    - virtualenv
+
+# Do an update for good measure
 - name: Apt | update
   apt:
     update-cache: yes

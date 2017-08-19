@@ -1,0 +1,30 @@
+---
+# File for configuring UFW
+# First lets make sure we have UFW installed and up to latest version
+- name: UFW | Make sure UFW is installed and updated to latest version
+  apt: name=ufw state=latest update_cache=yes
+
+# Next we specify the ports allowed - HTTP, NTP, SSH
+- name: UFW | Configure UFW to allow HTTP
+  ufw:
+    rule: allow
+    port: "{{ http_port }}"
+    proto: tcp
+
+- name: UFW | Configure UFW to allow NTP
+  ufw:
+    rule: allow
+    port: "{{ ntp_port }}"
+    proto: tcp
+
+- name: UFW | Configure UFW to allow SSH
+  ufw:
+    rule: allow
+    port: "{{ ssh_port }}"
+    proto: tcp
+
+# Reject everything and enable UFW
+- name: UFW | Enable Firewall with reject as default policy
+  ufw:
+    state: enabled
+    policy: reject

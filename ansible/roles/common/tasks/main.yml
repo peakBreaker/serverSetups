@@ -1,3 +1,4 @@
 ---
 - include: install_stuff.yml
 - include: config_server.yml
+- include: config_firewall.yml

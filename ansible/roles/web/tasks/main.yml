@@ -3,18 +3,21 @@
 #- name: Apt | Update
 #  apt:
 #    update-cache: yes
+- name: set_fact | Set SSH port to {{ ssh_port }}
+  set_fact:
+    ansible_port: "{{ ssh_port }}"
 
 - name: Synchronize | Application directory
   synchronize:
     src: app/{{ wsgi_application }}
-    dest: /home/{{sudo_user}}
+    dest: /var/www/html/
 
 # Next we copy over the configurations
 
 - name: Synchronize | Apache configurations
   synchronize:
-    src: app/serverSetups/config/000-default.conf
-    dest: /etc/apache2/sites-enabled/
+    src: app/serverSetups/config/apache/000-default.conf
+    dest: /etc/apache2/sites-enabled/000-default.conf
 
 - name: Synchronize | WSGI configurations
   synchronize:
