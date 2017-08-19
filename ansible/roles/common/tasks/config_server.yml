@@ -84,3 +84,5 @@
 - name: Start the ntp service
   service: name=ntp state=started enabled=yes
   tags: ntp
+
+# Finally we add a catalog user to our database with limited privelege

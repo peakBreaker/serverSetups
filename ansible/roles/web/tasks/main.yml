@@ -12,6 +12,8 @@
     src: app/{{ wsgi_application }}
     dest: /var/www/html/
 
+# Then we enable the virtualenv and install the dependencies for python
+
 # Next we copy over the configurations
 
 - name: Synchronize | Apache configurations

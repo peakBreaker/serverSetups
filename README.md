@@ -36,8 +36,9 @@ Instructions on how to get stuff up and running
 - Starts serving
 
 ## Resources
-- Ansible : http://docs.ansible.com/ansible/latest/playbooks.html
-- WSGI config : http://flask.pocoo.org/docs/0.12/deploying/mod_wsgi/
+- [Ansible playbooks](http://docs.ansible.com/ansible/latest/playbooks.html)
+- [WSGI config](http://flask.pocoo.org/docs/0.12/deploying/mod_wsgi/)
+- [Passwordless sudo](https://stackoverflow.com/questions/37333305/ansible-create-a-user-with-sudo-privileges)
 
 ## LICENCE
 The MIT License (MIT)
