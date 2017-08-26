@@ -4,7 +4,10 @@ driftfile /var/lib/ntp/drift
 restrict 127.0.0.1
 restrict -6 ::1
 
-server {{ ntp_server }}
+pool 0.amazon.pool.ntp.org 
+pool 1.amazon.pool.ntp.org
+pool 2.amazon.pool.ntp.org 
+pool 3.amazon.pool.ntp.org
 
 includefile /etc/ntp/crypto/pw
 

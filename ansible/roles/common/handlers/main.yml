@@ -3,4 +3,4 @@
   service: name=sshd state=restarted
 
 - name: restart ntp
-  service: name=ntpd state=restarted
+  service: name=ntp state=restarted

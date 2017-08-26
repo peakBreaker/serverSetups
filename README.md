@@ -17,14 +17,14 @@ Instructions on how to get stuff up and running
 
 ## Summary of configurations
 ![Network figure](./Network_fig.png)
+
 #### Harden server:
 - Create a new user with sudo access
 - Copy over SSH public keys from machine and keys folder
 - Disable root login
 - Change ssh port to port specified in vars
-- Enable the firewall to close off all ports except 80, 123 and ssh port found in group vars
+- Enable the firewall to close off all ports except port *80* for http, port *123* for ntp and ssh port found in group vars, which in our case is port *2200*
 - Update all applications
-
 - Creates database user `catalog` with limited permissions
 - Makes .git folder unavailable through the browser
 #### Other config:
@@ -44,11 +44,13 @@ Instructions on how to get stuff up and running
 
 ## Running demo
 
-You can find a running demo of one my webapplication on:
+You can find a running demo of the configuratons serving one of my webapps on:
 
 *http://restaurants.peakbreaker.com*
 
-It was deployed using these scripts
+**The server running the webapp has the ip: 18.220.169.81 and ssh port is 2200**
+
+It was deployed using the ansible scripts in this repository, and the webapp can be found in my webapp-flask repository.
 
 ## LICENCE
 The MIT License (MIT)
