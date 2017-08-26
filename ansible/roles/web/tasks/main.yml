@@ -1,8 +1,5 @@
 ---
-# tasks for webservers to run git clone on repo and run application
-#- name: Apt | Update
-#  apt:
-#    update-cache: yes
+# tasks for webservers to copy over webapplication (flask) with apache configs
 - name: set_fact | Set SSH port to {{ ssh_port }}
   set_fact:
     ansible_port: "{{ ssh_port }}"
@@ -12,17 +9,34 @@
     src: app/{{ wsgi_application }}
     dest: /var/www/html/
 
-# Then we enable the virtualenv and install the dependencies for python
+# Remove git folder so its not available
 
-# Next we copy over the configurations
+- name: Remove | .git folder in the webapplication
+  file:
+    state: absent
+    path: /var/www/html/{{ wsgi_application }}/.git
+
+# Then we install the dependencies for python from the requirements.txt in repo
+
+- name: PyPI | Install requirements for python
+  pip:
+    requirements: /var/www/html/{{ wsgi_application }}/requirements.txt
+    state: present
+
+# Next we configure postgresql
+
+- include: config_postgres.yml
+  become: yes
+  become_user: postgres
+
+# Next we copy over the configurations for apache and restart the service
 
 - name: Synchronize | Apache configurations
   synchronize:
     src: app/serverSetups/config/apache/000-default.conf
     dest: /etc/apache2/sites-enabled/000-default.conf
-
-- name: Synchronize | WSGI configurations
-  synchronize:
-    src: app/serverSetups/config/wsgi/myapp.wsgi
-    dest: /var/www/html/
-  notify: restart apache2
+    
+- name: Services | Restart Apache
+  service: 
+    name: apache2
+    state: restarted

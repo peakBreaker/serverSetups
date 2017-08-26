@@ -1,0 +1,13 @@
+---
+
+- name: psql | Ensure postgresql has DB
+  postgresql_db: name={{dbname}}
+
+- name: psql | Set postgresql_user
+  postgresql_user: db={{dbname}} name={{dbuser}} password={{dbpassword}} priv=ALL
+  
+- name: psql | Ensure that priveleges are limited
+  postgresql_user: name={{dbuser}} role_attr_flags=NOSUPERUSER,NOCREATEDB
+
+- name: psql | Ensure no other user can access the db
+  postgresql_privs: db={{dbname}} role=PUBLIC type=database priv=ALL state=absent

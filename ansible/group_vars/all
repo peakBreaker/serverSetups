@@ -11,3 +11,8 @@ ntp_server: 192.168.1.2
 ssh_port: 2200
 ntp_port: 123
 http_port: 80
+
+# Vars for db
+dbname: restaurantswithusers
+dbuser: catalog
+dbpassword: culinaryadventure443

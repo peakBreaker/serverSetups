@@ -11,9 +11,9 @@ Instructions on how to get stuff up and running
 
 ### Instructions
 1. Clone this repository
-2. Run the ansible script to do the initial serverconfigurations
+2. Run the ansible script to do the initial serverconfigurations ```$ ./ansible/run.sh initconfig``` or *config*, if this is the first time you run the config
 3. Clone the desired WSGI application (flask/django/etc) next to this repository
-4. Run the ansible deployment script
+4. Run the ansible deployment script - ```$ ./ansible/run.sh deploy```
 
 ## Summary of configurations
 ![Network figure](./Network_fig.png)
@@ -24,21 +24,31 @@ Instructions on how to get stuff up and running
 - Change ssh port to port specified in vars
 - Enable the firewall to close off all ports except 80, 123 and ssh port found in group vars
 - Update all applications
+
 - Creates database user `catalog` with limited permissions
-- Makes .git folder unavaliable through the browser
+- Makes .git folder unavailable through the browser
 #### Other config:
 - Configures NTP server
 #### Deploy WSGI application:
 - Install apache with apache wsgi libs
 - Installs and initiates PostgreSQL
-- Copy over application in neighbor repository
-- Copy over configurations for apache and wsgi
-- Starts serving
+- Copy over application in neighbor repository.  Foldername specified in vars
+- Copy over configurations for apache, runs wsgi specified in the webapps repo (\*.wsgi file)
+- Starts serving the webapp
 
 ## Resources
 - [Ansible playbooks](http://docs.ansible.com/ansible/latest/playbooks.html)
+- [Ansible playbooks examples](https://github.com/ansible/ansible-examples)
 - [WSGI config](http://flask.pocoo.org/docs/0.12/deploying/mod_wsgi/)
 - [Passwordless sudo](https://stackoverflow.com/questions/37333305/ansible-create-a-user-with-sudo-privileges)
+
+## Running demo
+
+You can find a running demo of one my webapplication on:
+
+*http://restaurants.peakbreaker.com*
+
+It was deployed using these scripts
 
 ## LICENCE
 The MIT License (MIT)
